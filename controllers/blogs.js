@@ -26,11 +26,11 @@ blogsRouter.get("/:id", async (request, response, next) => {
   }
 })
 
-blogsRouter.post("/", middleware.userExtractor, async (request, response, next) => {
+blogsRouter.post("/", middleware.tokenExtractor, middleware.userExtractor, async (request, response, next) => {
   try {
     const body = request.body
     const user = request.user
-    console.log(user)
+    //console.log(user)
 
     const blog = new Blog({
       title: body.title,
@@ -52,10 +52,10 @@ blogsRouter.post("/", middleware.userExtractor, async (request, response, next) 
   }
 })
 
-blogsRouter.delete("/:id", middleware.userExtractor, async (request, response, next) => {
+blogsRouter.delete("/:id", middleware.tokenExtractor, middleware.userExtractor, async (request, response, next) => {
   try {
     const user = request.user
-    console.log(user)
+    //console.log(user)
 
     const blog = await Blog.findById(request.params.id)
     if (!blog) {

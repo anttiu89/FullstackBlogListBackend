@@ -3,6 +3,7 @@ const User = require("../models/user")
 const jwt = require("jsonwebtoken")
 
 const requestLogger = (request, response, next) => {
+  //console.log(request)
   logger.info("Method:", request.method)
   logger.info("Path:  ", request.path)
   logger.info("Body:  ", request.body)
@@ -11,19 +12,30 @@ const requestLogger = (request, response, next) => {
 }
 
 const tokenExtractor = (request, response, next) => {
-  const authorization = request.get("authorization")
-  if (authorization && authorization.toLowerCase().startsWith("bearer ")) {
-    request.token = authorization.substring(7)
-  } 
+  try {
+    //console.log(request)
+    const authorization = request.get("authorization")
+    if (authorization && authorization.toLowerCase().startsWith("bearer ")) {
+      request.token = authorization.substring(7)
+    } 
+    console.log(request.token)
+  } catch(exception) {
+    next(exception)
+  }
   next()
 }
 
 const userExtractor = async (request, response, next) => {
-  const decodedToken = jwt.verify(request.token, process.env.SECRET)
-  if (!request.token || !decodedToken.id) {
-    return response.status(401).json({ error: "token missing or invalid" })
+  try {
+    //console.log(request)
+    const decodedToken = jwt.verify(request.token, process.env.SECRET)
+    if (!request.token || !decodedToken.id) {
+      return response.status(401).json({ error: "token missing or invalid" })
+    }
+    request.user = await User.findById(decodedToken.id)
+  } catch(exception) {
+    next(exception)
   }
-  request.user = await User.findById(decodedToken.id)
   next()
 }
 
