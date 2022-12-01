@@ -46,7 +46,7 @@ blogsRouter.post("/", middleware.tokenExtractor, middleware.userExtractor, async
       await user.save()
     }
     
-	const blogPopulated = await Blog.findById(savedBlog._id).populate("user", { username: 1, name: 1 })
+    const blogPopulated = await Blog.findById(savedBlog._id).populate("user", { username: 1, name: 1 })
 	
     response.status(201).json(blogPopulated)
   } catch(exception) {
